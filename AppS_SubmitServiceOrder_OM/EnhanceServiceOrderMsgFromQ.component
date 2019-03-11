@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scdl:component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:java="http://www.ibm.com/xmlns/prod/websphere/scdl/java/6.0.0" xmlns:ns1="http://SterlingLib/GetMessageFromQ" xmlns:ns2="http://Sterling_Library/GetServiceOrderMsg" xmlns:scdl="http://www.ibm.com/xmlns/prod/websphere/scdl/6.0.0" xmlns:wsdl="http://www.ibm.com/xmlns/prod/websphere/scdl/wsdl/6.0.0" displayName="EnhanceServiceOrderMsgFromQ" name="EnhanceServiceOrderMsgFromQ">
+  <interfaces>
+    <interface xsi:type="wsdl:WSDLPortType" preferredInteractionStyle="sync" portType="ns1:GetMessageFromQ"/>
+  </interfaces>
+  <references>
+    <reference name="GetServiceOrderMsgPartner">
+      <interface xsi:type="wsdl:WSDLPortType" portType="ns2:GetServiceOrderMsg"/>
+      <wire target="ServiceOrderManagementMED_REQ"/>
+    </reference>
+  </references>
+  <implementation xsi:type="java:JavaImplementation" class="EnhanceServiceOrderMsgFromQImpl"/>
+</scdl:component>

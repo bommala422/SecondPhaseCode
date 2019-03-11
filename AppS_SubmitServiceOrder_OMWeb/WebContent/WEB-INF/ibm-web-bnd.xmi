@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webappbnd:WebAppBinding xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:webappbnd="webappbnd.xmi" xmi:id="WebAppBinding_1169158416159" virtualHostName="default_host">
+  <webapp href="WEB-INF/web.xml#WebApp_ID"/>
+  <resRefBindings xmi:id="ResourceRefBinding_1546689138886" jndiName="AppS_SubmitServiceOrder_OM/ServiceOrderManagmentExport_JMS_FAILEDEVENT_REPLAY_CF" loginConfigurationName="DefaultPrincipalMapping">
+    <bindingResourceRef href="WEB-INF/web.xml#ResourceRef_1546689138886"/>
+    <properties xmi:id="Property_1546689138886" name="com.ibm.mapping.authDataAlias" value="DeAdminAlias"/>
+  </resRefBindings>
+  <resRefBindings xmi:id="ResourceRefBinding_1546694220885" jndiName="AppS_SubmitServiceOrder_OM/ServiceOrderManagmentExport_JMS_FAILEDEVENT_REPLAY_CF" loginConfigurationName="DefaultPrincipalMapping">
+    <bindingResourceRef href="WEB-INF/web.xml#ResourceRef_1546694220885"/>
+    <properties xmi:id="Property_1546694220885" name="com.ibm.mapping.authDataAlias" value="DeAdminAlias"/>
+  </resRefBindings>
+  <resRefBindings xmi:id="ResourceRefBinding_1546694220886" jndiName="jms/OUT_ServiceOrder_Local_Q">
+    <bindingResourceRef href="WEB-INF/web.xml#ResourceRef_1546694220886"/>
+  </resRefBindings>
+</webappbnd:WebAppBinding>

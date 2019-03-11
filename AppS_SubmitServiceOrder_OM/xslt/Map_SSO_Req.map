@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?><mappingRoot xmlns="http://www.ibm.com/2008/ccl/Mapping" domainID="com.ibm.msl.mapping.xml" targetNamespace="http://AppS_SubmitServiceOrder_OM/xslt/Map_OTA_req" version="8.0.4.0" xmlns:map="http://AppS_SubmitServiceOrder_OM/xslt/Map_OTA_req">
+    <input correlationContext="" message="{http://Sterling_Library/GetServiceOrderMsg}getServiceOrderMsgRequestMsg" sharedContext="{http://AppS_SubmitServiceOrder_OM}SharedBO" smoName="wsdl-primary" transientContext="" type="smo" types="" xpath="/"/>
+    <output correlationContext="" message="{http://TPSMOAI/AIS/SubmitServiceOrder}invokeMsg" sharedContext="{http://AppS_SubmitServiceOrder_OM}SharedBO" smoName="wsdl-primary" transientContext="" type="smo" types="" xpath="/"/>
+    <namespaces>
+        <namespace kind="supplement" prefix="in2" uri="http://Sterling_Library/GetServiceOrderMsg"/>
+        <namespace kind="supplement" prefix="in3" uri="http://www.sterlingcommerce.com/documentation/H3G/ServiceOrder/input"/>
+        <namespace kind="supplement" prefix="io5" uri="http://www.w3.org/2005/08/addressing"/>
+        <namespace kind="supplement" prefix="io4" uri="http://www.ibm.com/xmlns/prod/websphere/http/sca/6.1.0"/>
+        <namespace kind="supplement" prefix="io3" uri="http://www.ibm.com/websphere/sibx/smo/v6.0.1"/>
+        <namespace kind="supplement" prefix="io2" uri="http://www.ibm.com/xmlns/prod/websphere/mq/sca/6.0.0"/>
+        <namespace kind="supplement" prefix="io6" uri="http://www.w3.org/2003/05/soap-envelope"/>
+        <namespace kind="supplement" prefix="io7" uri="http://AppS_SubmitServiceOrder_OM"/>
+        <namespace kind="supplement" prefix="in" uri="wsdl.http://Sterling_Library/GetServiceOrderMsg"/>
+        <namespace kind="supplement" prefix="io" uri="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+        <namespace kind="supplement" prefix="out7" uri="http://www.ibm.com/software/issw/telecom/pack/v8.5.0/lite/businessobject/system/fulfillment/extension"/>
+        <namespace kind="supplement" prefix="out6" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/messageview"/>
+        <namespace kind="supplement" prefix="out9" uri="http://www.ibm.com/software/issw/telecom/pack/v8.5.0/lite/businessobject/system/assurance/extension"/>
+        <namespace kind="supplement" prefix="out8" uri="http://www.ibm.com/software/issw/telecom/pack/v8.5.0/lite/businessobject/system/common/extension"/>
+        <namespace kind="supplement" prefix="out11" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/fulfillment/extensions"/>
+        <namespace kind="supplement" prefix="out3" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/common"/>
+        <namespace kind="supplement" prefix="out12" uri="http://TPSMOAI/AIS/SubmitServiceOrder"/>
+        <namespace kind="supplement" prefix="out2" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/systemview"/>
+        <namespace kind="supplement" prefix="out5" uri="http://TPCMN"/>
+        <namespace kind="supplement" prefix="out10" uri="http://www.ibm.com/software/issw/telecom/pack/v8.5.0/lite/businessobject/system/sid-v12.5"/>
+        <namespace kind="supplement" prefix="out4" uri="http://www.ibm.com/software/issw/telecom/pack/v8.5.0/lite/businessobject/system/billing/extension"/>
+        <namespace kind="supplement" prefix="out15" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/billing/extensions"/>
+        <namespace kind="supplement" prefix="out14" uri="wsdl.http://TPSMOAI/AIS/SubmitServiceOrder"/>
+        <namespace kind="supplement" prefix="out13" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/assurance/extensions"/>
+        <namespace kind="supplement" prefix="out" uri="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/common/extensions"/>
+    </namespaces>
+    <generation engine="xslt2"/>
+    <mappingDeclaration name="Map_SSO_Req">
+        <input namespace="http://www.ibm.com/websphere/sibx/smo/v6.0.1" path="smo"/>
+        <output namespace="http://www.ibm.com/websphere/sibx/smo/v6.0.1" path="smo"/>
+        <move>
+            <input path="body/getServiceOrderMsg/input/@OrderHeaderKey"/>
+            <output path="body/invoke/submitServiceOrderInput/Payload/ID/ID"/>
+        </move>
+        <move>
+            <input path="body/getServiceOrderMsg/input/@OrderHeaderKey"/>
+            <output path="body/invoke/submitServiceOrderInput/Header/CorrelationId_T"/>
+        </move>
+        <move>
+            <input path="body/getServiceOrderMsg/input/@OrderType"/>
+            <output path="body/invoke/submitServiceOrderInput/Payload/ID/type"/>
+        </move>
+        <move>
+            <input path="body/getServiceOrderMsg/input/Extn/@ExtnTargetOSS"/>
+            <output path="body/invoke/submitServiceOrderInput/Header/destinationURI"/>
+        </move>
+        <foreach>
+            <input path="body/getServiceOrderMsg/input/OrderLines/OrderLine"/>
+            <output path="body/invoke/submitServiceOrderInput/Payload/ServiceOrderDetails"/>
+            <move>
+                <input path="@OrderLineKey"/>
+                <output path="BusinessInteractionItem/ID/ID"/>
+            </move>
+            <move>
+                <input path="@LineType" var="LineType4"/>
+                <output path="BusinessInteractionItem/Service/ID/type"/>
+            </move>
+            <move>
+                <input path="@Purpose"/>
+                <output path="BusinessInteractionItem/action"/>
+            </move>
+            <convert>
+                <input path="CustomAttributes/@hasStarted"/>
+                <output path="BusinessInteractionItem/Service/hasStarted"/>
+            </convert>
+            <convert>
+                <input path="CustomAttributes/@mandatory"/>
+                <output path="BusinessInteractionItem/Service/isMandatory"/>
+            </convert>
+            <convert>
+                <input path="CustomAttributes/@serviceEnabled"/>
+                <output path="BusinessInteractionItem/Service/isServiceEnabled"/>
+            </convert>
+            <convert>
+                <input path="CustomAttributes/@stateful"/>
+                <output path="BusinessInteractionItem/Service/isStateful"/>
+            </convert>
+            <if>
+                <input path="Extn/EXTNOrderLinePropertiesList/EXTNOrderLineProperties" var="EXTNOrderLineProperties"/>
+                <input path="@LineType" var="LineType"/>
+                <input path="CustomAttributes/@status" var="status1"/>
+                <output path="BusinessInteractionItem/Service/CustomerFacingService/CharacteristicSpecification"/>
+                <test lang="xpath">$LineType='CFS'</test>
+                <foreach>
+                    <input path="$EXTNOrderLineProperties/."/>
+                    <output path="."/>
+                    <move>
+                        <input path="@DescribedByCharacteristic"/>
+                        <output path="description"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByCharacteristicName"/>
+                        <output path="name"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByValue"/>
+                        <output path="Value/CharacteristicValue/value"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByType"/>
+                        <output path="valueType"/>
+                    </move>
+                    <local>
+                        <input path="@CharacteristicEntityId"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="."/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityId">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                    <local>
+                        <input path="@CharacteristicPath"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="."/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityPath">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                </foreach>
+                <local>
+                    <input path="$status1/."/>
+                    <output path="."/>
+                    <move>
+                        <input path="."/>
+                        <output path="Value/CharacteristicValue/value"/>
+                    </move>
+                    <assign value="status">
+                        <output path="name"/>
+                    </assign>
+                </local>
+            </if>
+            <if>
+                <input path="Extn/EXTNOrderLinePropertiesList/EXTNOrderLineProperties" var="EXTNOrderLineProperties1"/>
+                <input path="@LineType" var="LineType1"/>
+                <input path="CustomAttributes/@status" var="status2"/>
+                <output path="BusinessInteractionItem/Service/ResourceFacingServices/CharacteristicSpecification"/>
+                <test lang="xpath">$LineType1='RFS'</test>
+                <foreach>
+                    <input path="$EXTNOrderLineProperties1/." var="EXTNOrderLineProperties1"/>
+                    <output path="."/>
+                    <move>
+                        <input path="$EXTNOrderLineProperties1/@DescribedByCharacteristic"/>
+                        <output path="description"/>
+                    </move>
+                    <move>
+                        <input path="$EXTNOrderLineProperties1/@DescribedByCharacteristicName"/>
+                        <output path="name"/>
+                    </move>
+                    <move>
+                        <input path="$EXTNOrderLineProperties1/@DescribedByType"/>
+                        <output path="valueType"/>
+                    </move>
+                    <move>
+                        <input path="$EXTNOrderLineProperties1/@DescribedByValue"/>
+                        <output path="Value/CharacteristicValue/value"/>
+                    </move>
+                    <local>
+                        <input path="$EXTNOrderLineProperties1/@CharacteristicEntityId"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="."/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityId">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                    <local>
+                        <input path="$EXTNOrderLineProperties1/@CharacteristicPath"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="."/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityPath">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                </foreach>
+                <local>
+                    <input path="$status2/."/>
+                    <output path="."/>
+                    <move>
+                        <input path="."/>
+                        <output path="Value/CharacteristicValue/value"/>
+                    </move>
+                    <assign value="status">
+                        <output path="name"/>
+                    </assign>
+                </local>
+            </if>
+            <if>
+                <input path="Item/@ItemID" var="ItemID"/>
+                <input path="@LineType" var="LineType1"/>
+                <output path="BusinessInteractionItem/Service/CustomerFacingService/ID/ID"/>
+                <test lang="xpath">$LineType1='CFS'</test>
+                <move>
+                    <input path="$ItemID/." var="ItemID5"/>
+                    <output path="."/>
+                </move>
+            </if>
+            <if>
+                <input path="Item/@ItemID" var="ItemID3"/>
+                <input path="@LineType" var="LineType3"/>
+                <output path="BusinessInteractionItem/Service/ResourceFacingServices/ID/ID"/>
+                <test lang="xpath">$LineType3='RFS'</test>
+                <move>
+                    <input path="$ItemID3/." var="ItemID4"/>
+                    <output path="."/>
+                </move>
+            </if>
+            <local>
+                <input path="@ReqShipDate"/>
+                <output path="BusinessInteractionItem/Service/CharacteristicSpecification"/>
+                <move>
+                    <input path="."/>
+                    <output path="Value/CharacteristicValue/value"/>
+                </move>
+                <assign value="ReqShipDate">
+                    <output path="name"/>
+                </assign>
+            </local>
+        </foreach>
+        <foreach>
+            <input path="body/getServiceOrderMsg/input/ResourceDependancy/OrderLine"/>
+            <output path="body/invoke/submitServiceOrderInput/Payload/ServiceOrderDetails"/>
+            <move>
+                <input path="@LineType" var="LineType5"/>
+                <output path="BusinessInteractionItem/Resource/ID/type"/>
+            </move>
+            <move>
+                <input path="@Purpose" var="Purpose"/>
+                <output path="BusinessInteractionItem/action"/>
+            </move>
+            <if>
+                <input path="@LineType" var="LineType6"/>
+                <input path="Item/@ItemID" var="ItemID6"/>
+                <input path="Extn/EXTNOrderLinePropertiesList/EXTNOrderLineProperties" var="EXTNOrderLineProperties2"/>
+                <output path="BusinessInteractionItem/Resource/LogicalResource"/>
+                <test lang="xpath">$LineType6='LOGICAL_RESOURCE'</test>
+                <move>
+                    <input path="$ItemID6/." var="ItemID7"/>
+                    <output path="ID/ID"/>
+                </move>
+                <foreach>
+                    <input path="$EXTNOrderLineProperties2/."/>
+                    <output path="CharacteristicSpecification"/>
+                    <move>
+                        <input path="@DescribedByCharacteristic" var="DescribedByCharacteristic2"/>
+                        <output path="description"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByCharacteristicName" var="DescribedByCharacteristicName2"/>
+                        <output path="name"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByType" var="DescribedByType2"/>
+                        <output path="valueType"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByValue" var="DescribedByValue2"/>
+                        <output path="Value/CharacteristicValue/value"/>
+                    </move>
+                    <local>
+                        <input path="@CharacteristicEntityId" var="CharacteristicEntityId5"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="$CharacteristicEntityId5/." var="CharacteristicEntityId6"/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityId">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                    <local>
+                        <input path="@CharacteristicPath" var="CharacteristicPath3"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="$CharacteristicPath3/." var="CharacteristicPath4"/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityPath">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                </foreach>
+            </if>
+            <if>
+                <input path="Extn/EXTNOrderLinePropertiesList/EXTNOrderLineProperties" var="EXTNOrderLineProperties3"/>
+                <input path="@LineType" var="LineType7"/>
+                <input path="Item/@ItemID" var="ItemID8"/>
+                <output path="BusinessInteractionItem/Resource/PhysicalResource"/>
+                <test lang="xpath">$LineType7='PHYSICAL_RESOURCE'</test>
+                <move>
+                    <input path="$ItemID8/." var="ItemID10"/>
+                    <output path="ID/ID"/>
+                </move>
+                <foreach>
+                    <input path="$EXTNOrderLineProperties3/."/>
+                    <output path="CharacteristicSpecification"/>
+                    <move>
+                        <input path="@DescribedByCharacteristic" var="DescribedByCharacteristic3"/>
+                        <output path="description"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByCharacteristicName" var="DescribedByCharacteristicName3"/>
+                        <output path="name"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByType" var="DescribedByType3"/>
+                        <output path="valueType"/>
+                    </move>
+                    <move>
+                        <input path="@DescribedByValue" var="DescribedByValue3"/>
+                        <output path="Value/CharacteristicValue/value"/>
+                    </move>
+                    <local>
+                        <input path="@CharacteristicEntityId" var="CharacteristicEntityId7"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="$CharacteristicEntityId7/." var="CharacteristicEntityId8"/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityId">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                    <local>
+                        <input path="@CharacteristicPath" var="CharacteristicPath5"/>
+                        <output path="ComponentCharacteristicSpecification"/>
+                        <move>
+                            <input path="$CharacteristicPath5/." var="CharacteristicPath6"/>
+                            <output path="Value/CharacteristicValue/value"/>
+                        </move>
+                        <assign value="CharacteristicEntityPath">
+                            <output path="name"/>
+                        </assign>
+                    </local>
+                </foreach>
+            </if>
+        </foreach>
+        <move>
+            <input path="body/getServiceOrderMsg/input/Extn/@ExtnCustomerOrderNo"/>
+            <output path="body/invoke/submitServiceOrderInput/Payload/InteractionDetails/ID/ID"/>
+        </move>
+    </mappingDeclaration>
+</mappingRoot>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mediationFlow xmlns="http://www.ibm.com/xmlns/prod/websphere/2010/MediationFlow" xmlns:SubmitServiceOrder="http://TPSMOAI/AIS/SubmitServiceOrder" xmlns:XMLSchema="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://Sterling_Library/GetServiceOrderMsg" name="ServiceOrderManagementMED_REQ" targetNamespace="http://ApplicationService_Sterling_ServiceOrderManagement/ServiceOrderManagementMED_REQ">
+  <import location="GetServiceOrderMsg.wsdl" namespace="http://Sterling_Library/GetServiceOrderMsg"/>
+  <import location="SubmitServiceOrder.wsdl" namespace="http://TPSMOAI/AIS/SubmitServiceOrder"/>
+  <promotedProperty name="ServiceInvoke1.retryOn" group="AppS_SubmitServiceOrder_OM.ServiceOrderManagementMED_REQ" value="1"/>
+  <promotedProperty name="ServiceInvoke1.retryCount" group="AppS_SubmitServiceOrder_OM.ServiceOrderManagementMED_REQ" value="3"/>
+  <promotedProperty name="ServiceInvoke1.retryDelay" group="AppS_SubmitServiceOrder_OM.ServiceOrderManagementMED_REQ" value="5"/>
+  <reference name="SubmitServiceOrderPartner" portType="SubmitServiceOrder:SubmitServiceOrder"/>
+  <interface portType="ns2:GetServiceOrderMsg">
+    <operation name="getServiceOrderMsg">
+      <requestFlow>
+        <node displayName="getServiceOrderMsg : GetServiceOrderMsg" name="GetServiceOrderMsg_getServiceOrderMsg_Input" type="Input">
+          <property name="sharedContext" value="{http://AppS_SubmitServiceOrder_OM}SharedBO"/>
+          <outputTerminal type="ns2:getServiceOrderMsgRequestMsg">
+            <wire targetNode="SetTransID"/>
+          </outputTerminal>
+        </node>
+        <node name="Log_SSO_Req" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- Sterling_SubmitServiceOrder Module::: Log SubmitServiceOrder Req   --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1507027782287"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="ns2:getServiceOrderMsgRequestMsg">
+            <wire targetNode="Map_SSO_Req"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="SetTransID" type="MessageElementSetter">
+          <table name="messageElements">
+            <row>
+              <property name="target" value="/context/shared/TransID"/>
+              <property name="type" value="copy"/>
+              <property name="value" value="/body/getServiceOrderMsg/input/@OrderHeaderKey"/>
+            </row>
+          </table>
+          <inputTerminal/>
+          <outputTerminal>
+            <wire targetNode="Log_SSO_Req"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_SSO_Req" type="XSLTransformation">
+          <property name="root" value="/"/>
+          <property name="XSLTransform" value="xslt/Map_SSO_Req.xsl"/>
+          <property name="XMXMap" value="xslt/Map_SSO_Req.map"/>
+          <property name="SMOVersion" value="SMO61"/>
+          <inputTerminal type="ns2:getServiceOrderMsgRequestMsg"/>
+          <outputTerminal type="SubmitServiceOrder:invokeMsg">
+            <wire targetNode="Invoke_SSO_BS"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_MapFailureMsg"/>
+          </failTerminal>
+        </node>
+        <node name="Invoke_SSO_BS" type="ServiceInvoke">
+          <property name="referenceName" value="SubmitServiceOrderPartner"/>
+          <property name="operationName" value="invoke"/>
+          <property name="invocationStyle" value="6"/>
+          <property name="retryOn" promotedPropertyGroup="AppS_SubmitServiceOrder_OM.ServiceOrderManagementMED_REQ" promotedPropertyName="ServiceInvoke1.retryOn"/>
+          <property name="retryCount" promotedPropertyGroup="AppS_SubmitServiceOrder_OM.ServiceOrderManagementMED_REQ" promotedPropertyName="ServiceInvoke1.retryCount"/>
+          <property name="retryDelay" promotedPropertyGroup="AppS_SubmitServiceOrder_OM.ServiceOrderManagementMED_REQ" promotedPropertyName="ServiceInvoke1.retryDelay"/>
+          <inputTerminal type="SubmitServiceOrder:invokeMsg"/>
+          <outputTerminal type="SubmitServiceOrder:invokeResponseMsg">
+            <wire targetNode="Log_Ack_Response"/>
+          </outputTerminal>
+          <outputTerminal name="timeout" type="SubmitServiceOrder:invokeMsg">
+            <wire targetNode="Prep_TimeOut_Fail_Msg"/>
+          </outputTerminal>
+          <outputTerminal description="Propagates the modeled fault message, received from the service invocation. There is no failInfo data associated with a modeled fault." name="invokeFault1Msg" type="SubmitServiceOrder:invokeFault1Msg"/>
+          <failTerminal>
+            <wire targetNode="Prep_TimeOut_Fail_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Log_Ack_Response" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+ BPMCustomLogger.logInfo("----------- Sterling_SubmitServiceOrder Module::: Ack Response --------------");
+
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+
+try{
+
+keys.put("Id", smo.getString("/context/shared/TransID"));
+
+}
+
+catch(Exception e){
+
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+
+}
+
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1510795765853"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="java.util.LinkedHashMap;com.ibm.bpm.custom.logging.BPMCustomLogger"/>
+          <inputTerminal/>
+          <outputTerminal>
+            <wire targetNode="Stop1"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node displayName="Prep_TimeOut/Fail_Msg" name="Prep_TimeOut_Fail_Msg" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+
+BPMCustomLogger.logInfo("----- Sterling_SubmitServiceOrder module :  Timeout/Fail while invoking SSO BS module -----");
+String sourceKey = "";
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+
+try {
+	sourceKey = smo.getString("/context/shared/TransID");
+	keys.put("TransactionID : ", sourceKey);
+}catch(Exception ee){
+	BPMCustomLogger.logError("Prepare TimeOut Msg: Unable to extract value for SourceKey");
+
+} 
+
+out.fire(ExceptionHelper.processUndefinedError(smo, out, TPConstants.AppS_TIMEOUT_FAIL, sourceKey)); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ ]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1510795858154"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;com.ibm.bpm.custom.utils.TPConstants;com.ibm.bpm.custom.utils.ExceptionHelper;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal>
+            <wire targetNode="Stop1"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Prep_MapFailureMsg" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("-----Sterling_SubmitServiceOrder module : Map Failure -----");
+String sourceKey = "";
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+
+try {
+	sourceKey = smo.getString("/context/shared/TransID");
+	keys.put("TransactionID : ", sourceKey);
+}catch(Exception e){
+	BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+
+} 
+
+out.fire(ExceptionHelper.processUndefinedError(smo, out, TPConstants.BOMAP_XSLT_FAIL, sourceKey)); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1510795860302"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;com.ibm.bpm.custom.utils.TPConstants;com.ibm.bpm.custom.utils.ExceptionHelper;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal>
+            <wire targetNode="Stop1"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Stop1" type="Stop">
+          <inputTerminal/>
+        </node>
+      </requestFlow>
+      <errorFlow>
+        <node displayName="getServiceOrderMsg : GetServiceOrderMsg" name="GetServiceOrderMsg_getServiceOrderMsg_ErrorInput" type="ErrorInput">
+          <outputTerminal name="catchAll" type="XMLSchema:anyType"/>
+        </node>
+      </errorFlow>
+    </operation>
+  </interface>
+</mediationFlow>
