@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scdl:import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://www.ibm.com/xmlns/prod/websphere/scdl/jaxws/6.0.0" xmlns:ns1="http://three.co.uk/wsdl/resourceorder-3ds/v1" xmlns:scdl="http://www.ibm.com/xmlns/prod/websphere/scdl/6.0.0" xmlns:wsdl="http://www.ibm.com/xmlns/prod/websphere/scdl/wsdl/6.0.0" displayName="Submit3DSmport_WS" name="Submit3DSmport_WS">
-  <interfaces>
-    <interface xsi:type="wsdl:WSDLPortType" preferredInteractionStyle="sync" portType="ns1:Submit3DSRequest">
-      <scdl:interfaceQualifier xsi:type="scdl:JoinTransaction" value="false"/>
-    </interface>
-  </interfaces>
-  <esbBinding xsi:type="jaxws:JaxWsImportBinding" endpoint="https://10.90.101.4:15020/AS_3DS_001_ResourceOrder_3DS/resourceorder_3ds_V1/" port="ns1:Submit3DSRequestSOAP" service="ns1:Submit3DSRequest" WSICompliant="true"/>
-</scdl:import>
