@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mediationFlow xmlns="http://www.ibm.com/xmlns/prod/websphere/2010/MediationFlow" xmlns:IOrderPayloadMediator_EIR="http://h3g.ibm.serviceactivation.eir" xmlns:IOrderPayloadMediator_SDM="http://h3g.ibm.serviceactivation.sdm" xmlns:SubmitResourceOrder="http://TPRMOAI/AIS/SubmitResourceOrder" xmlns:SubmitSDMRequest-01="http://three.co.uk/wsdl/as_sdm_093/serviceordersdm/v1" xmlns:XMLSchema="http://www.w3.org/2001/XMLSchema" name="ResourceOrder_SDM_TIBCO_MED" targetNamespace="http://AppS_SubmitResourceOrder_TIBCO">
+  <import location="SubmitResourceOrder.wsdl" namespace="http://TPRMOAI/AIS/SubmitResourceOrder"/>
+  <import location="IOrderPayloadMediator_SDM.wsdl" namespace="http://h3g.ibm.serviceactivation.sdm"/>
+  <import location="ResourceOrder_SDM.wsdl" namespace="http://three.co.uk/wsdl/as_sdm_093/serviceordersdm/v1"/>
+  <import location="IOrderPayloadMediator_EIR.wsdl" namespace="http://h3g.ibm.serviceactivation.eir"/>
+  <promotedProperty name="ServiceInvoke1.retryOn" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="1"/>
+  <promotedProperty name="ServiceInvoke1.retryCount" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="3"/>
+  <promotedProperty name="ServiceInvoke1.retryDelay" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="5"/>
+  <promotedProperty name="ServiceInvoke1.retryOn1" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="1"/>
+  <promotedProperty name="ServiceInvoke1.retryCount1" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="3"/>
+  <promotedProperty name="ServiceInvoke1.retryDelay1" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="5"/>
+  <promotedProperty name="ServiceInvoke1.retryOn2" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="1"/>
+  <promotedProperty name="ServiceInvoke1.retryCount2" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="3"/>
+  <promotedProperty name="ServiceInvoke1.retryDelay2" group="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" value="5"/>
+  <reference name="IOrderPayloadMediator_SDMPartner" portType="IOrderPayloadMediator_SDM:IOrderPayloadMediator_SDM"/>
+  <reference name="SubmitSDMRequest-01Partner" portType="SubmitSDMRequest-01:SubmitSDMRequest-01"/>
+  <reference name="IOrderPayloadMediator_EIRPartner" portType="IOrderPayloadMediator_EIR:IOrderPayloadMediator_EIR"/>
+  <interface portType="SubmitResourceOrder:SubmitResourceOrder">
+    <operation name="invoke">
+      <requestFlow>
+        <node displayName="invoke : SubmitResourceOrder" name="SubmitResourceOrder_invoke_Input" type="Input">
+          <property name="sharedContext" value="{http://AS_SubmitResourceOrder_TIBCO}Tibco_SharedBO"/>
+          <outputTerminal type="SubmitResourceOrder:invokeMsg">
+            <wire targetNode="SetTransID"/>
+          </outputTerminal>
+        </node>
+        <node displayName="invoke : SubmitResourceOrder" name="SubmitResourceOrder_invoke_InputResponse" type="InputResponse">
+          <inputTerminal type="SubmitResourceOrder:invokeResponseMsg"/>
+        </node>
+        <node displayName="invoke : SubmitResourceOrder" name="SubmitResourceOrder_invoke_InputFault" type="InputFault">
+          <inputTerminal name="invokeFault1Msg" type="SubmitResourceOrder:invokeFault1Msg"/>
+        </node>
+        <node name="SetTransID" type="MessageElementSetter">
+          <table name="messageElements">
+            <row>
+              <property name="target" value="/context/shared/TransID"/>
+              <property name="type" value="copy"/>
+              <property name="value" value="/body/invoke/submitResourceOrderInput/Header/CorrelationId_T"/>
+            </row>
+            <row>
+              <property name="target" value="/context/shared/OperationName"/>
+              <property name="type" value="copy"/>
+              <property name="value" value="substring-after(body/invoke/submitResourceOrderInput/Header/destinationURI , &quot;,&quot;)"/>
+            </row>
+            <row>
+              <property name="target" value="/context/shared/TargetSystem"/>
+              <property name="type" value="copy"/>
+              <property name="value" value="substring-before(body/invoke/submitResourceOrderInput/Header/destinationURI ,&quot;,&quot; )"/>
+            </row>
+          </table>
+          <inputTerminal/>
+          <outputTerminal>
+            <wire targetNode="Log_SRO_Req"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_MapFailure_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Log_SRO_Req" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("-----------  AppS_SubmitResourceOrder TIBCO Module: Log SubmitResourceOrder Req  --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("Transaction ID::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+
+ 
+ ]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515664382517"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitResourceOrder:invokeMsg">
+            <wire targetNode="Map_PopulateEPCCatalogueBO"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_PopulateEPCCatalogueBO" type="BOMapper">
+          <property name="root" value="/"/>
+          <property name="mappingFile" value="Map_PopulateEPCCatalogueBO.map"/>
+          <inputTerminal type="SubmitResourceOrder:invokeMsg"/>
+          <outputTerminal type="SubmitResourceOrder:invokeMsg">
+            <wire targetNode="MessageFilter_OperationName"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_MapFailure_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="MessageFilter_OperationName" type="MessageFilter">
+          <table name="filters">
+            <row>
+              <property name="pattern" value="/context/shared/OperationName = 'CreateAUC'"/>
+              <property name="terminalName" value="match2"/>
+            </row>
+            <row>
+              <property name="pattern" value="/context/shared/OperationName = 'CreateEIR'"/>
+              <property name="terminalName" value="match1"/>
+            </row>
+          </table>
+          <inputTerminal/>
+          <outputTerminal name="default">
+            <wire targetNode="Prep_MapFailure_Msg"/>
+          </outputTerminal>
+          <outputTerminal displayName="CreateAUC" name="match2">
+            <wire targetNode="Map_CreateAUC_Req"/>
+          </outputTerminal>
+          <outputTerminal displayName="CreateEIR" name="match1">
+            <wire targetNode="Map_CreateEIR_Req"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_MapFailure_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Prep_MapFailure_Msg" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+
+BPMCustomLogger.logInfo("----- AppS_SubmitResourceOrder TIBCO module :  Map Failure -----");
+String sourceKey = "";
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+
+try {
+	sourceKey = smo.getString("/context/shared/TransID");
+	keys.put("TransactionID : ", sourceKey);
+}catch(Exception ee){
+	BPMCustomLogger.logError("Prepare TimeOut Msg: Unable to extract value for SourceKey");
+
+} 
+
+out.fire(ExceptionHelper.processUndefinedError(smo, out, TPConstants.BOMAP_XSLT_FAIL, sourceKey)); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515695805302"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;com.ibm.bpm.custom.utils.TPConstants;com.ibm.bpm.custom.utils.ExceptionHelper;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal type="SubmitResourceOrder:invokeFault1Msg">
+            <wire targetNode="SubmitResourceOrder_invoke_InputFault" targetTerminal="invokeFault1Msg"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_CreateAUC_Req" type="BOMapper">
+          <property name="root" value="/"/>
+          <property name="mappingFile" value="Map_CreateAUC_Req.map"/>
+          <inputTerminal type="SubmitResourceOrder:invokeMsg"/>
+          <outputTerminal type="IOrderPayloadMediator_SDM:createAUCRequestMsg">
+            <wire targetNode="Log_CreateAUC_Req"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_MapFailure_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Log_CreateAUC_Req" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- AppS_SubmitResourceOrder  TIBCO Module::: Log  ServiceActivation - CreateAUC  Request  --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515699176911"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="IOrderPayloadMediator_SDM:createAUCRequestMsg">
+            <wire targetNode="Invoke_SA_CreateAUC"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Invoke_SA_CreateAUC" type="ServiceInvoke">
+          <property name="referenceName" value="IOrderPayloadMediator_SDMPartner"/>
+          <property name="operationName" value="createAUC"/>
+          <property name="invocationStyle" value="6"/>
+          <property name="retryOn" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryOn"/>
+          <property name="retryCount" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryCount"/>
+          <property name="retryDelay" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryDelay"/>
+          <inputTerminal type="IOrderPayloadMediator_SDM:createAUCRequestMsg"/>
+          <outputTerminal type="IOrderPayloadMediator_SDM:createAUCResponseMsg">
+            <wire targetNode="Log_CreateAUC_Resp"/>
+          </outputTerminal>
+          <outputTerminal name="timeout" type="IOrderPayloadMediator_SDM:createAUCRequestMsg">
+            <wire targetNode="Prep_SA_CreateAUC_TimeOut_Fail_Msg"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_SA_CreateAUC_TimeOut_Fail_Msg"/>
+          </failTerminal>
+        </node>
+        <node displayName="Prep_SA_CreateAUC_TimeOut/Fail_Msg" name="Prep_SA_CreateAUC_TimeOut_Fail_Msg" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+
+BPMCustomLogger.logInfo("----- AppS_SubmitResourceOrder  TIBCO Module:::  Timeout/Fail while invoking ServiceActivation - CreateAUC -----");
+String sourceKey = "";
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+
+try {
+	sourceKey = smo.getString("/context/shared/TransID");
+	System.out.println("*************sourceKey**********"+sourceKey);
+	keys.put("TransactionID : ", sourceKey);
+}catch(Exception ee){
+	BPMCustomLogger.logError("Prepare TimeOut Msg: Unable to extract value for SourceKey");
+
+} 
+
+out.fire(ExceptionHelper.processUndefinedError(smo, out, TPConstants.AppS_TIMEOUT_FAIL_TIBCO, sourceKey)); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515699339784"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;com.ibm.bpm.custom.utils.TPConstants;com.ibm.bpm.custom.utils.ExceptionHelper;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitResourceOrder:invokeFault1Msg">
+            <wire targetNode="SubmitResourceOrder_invoke_InputFault" targetTerminal="invokeFault1Msg"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Log_CreateAUC_Resp" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- AppS_SubmitResourceOrder  TIBCO Module::: Log  ServiceActivation - CreateAUC  Response  --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515699428082"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="IOrderPayloadMediator_SDM:createAUCResponseMsg">
+            <wire targetNode="Map_SDM_CreateAUC_Req"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_SDM_CreateAUC_Req" type="XSLTransformation">
+          <property name="root" value="/"/>
+          <property name="XSLTransform" value="xslt/Map_SDM_CreateAUC_Req.xsl"/>
+          <property name="XMXMap" value="xslt/Map_SDM_CreateAUC_Req.map"/>
+          <property name="SMOVersion" value="SMO61"/>
+          <inputTerminal type="IOrderPayloadMediator_SDM:createAUCResponseMsg"/>
+          <outputTerminal type="SubmitSDMRequest-01:ADDRequest">
+            <wire targetNode="Log_SDM_CreateAUC_Req"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Log_SDM_CreateAUC_Req" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- AppS_SubmitResourceOrder  TIBCO Module::: Log SDM - CreateAUC Request   --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515736471350"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitSDMRequest-01:ADDRequest">
+            <wire targetNode="Invoke_SDM_CreateAUC_EIR"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node displayName="Invoke_SDM_CreateAUC/EIR" name="Invoke_SDM_CreateAUC_EIR" type="ServiceInvoke">
+          <property name="referenceName" value="SubmitSDMRequest-01Partner"/>
+          <property name="operationName" value="ADD"/>
+          <property name="invocationStyle" value="6"/>
+          <property name="retryOn" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryOn1"/>
+          <property name="retryCount" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryCount1"/>
+          <property name="retryDelay" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryDelay1"/>
+          <inputTerminal type="SubmitSDMRequest-01:ADDRequest"/>
+          <outputTerminal type="SubmitSDMRequest-01:ADDResponse">
+            <wire targetNode="Log_SDM_CretaeAUC_Resp"/>
+          </outputTerminal>
+          <outputTerminal name="timeout" type="SubmitSDMRequest-01:ADDRequest">
+            <wire targetNode="Prep_SDM_CreateAUCTimeOut_Fail_Msg"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_SDM_CreateAUCTimeOut_Fail_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Log_SDM_CretaeAUC_Resp" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("-----------  AppS_SubmitResourceOrder  TIBCO Module::: Log SDM - CreateAUC Response   --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515736600740"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitSDMRequest-01:ADDResponse">
+            <wire targetNode="Set_SDM_CretaeAUC_Resp"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Set_SDM_CretaeAUC_Resp" type="MessageElementSetter">
+          <table name="messageElements">
+            <row>
+              <property name="target" value="/context/shared/CDMHeader"/>
+              <property name="type" value="copy"/>
+              <property name="value" value="/headers/SOAPHeader/value"/>
+            </row>
+          </table>
+          <inputTerminal/>
+          <outputTerminal>
+            <wire targetNode="Map_SDM_CretaeAUC_Resp"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_SDM_CretaeAUC_Resp" type="XSLTransformation">
+          <property name="root" value="/"/>
+          <property name="XSLTransform" value="xslt/Map_SDM_CretaeAUC_Resp.xsl"/>
+          <property name="XMXMap" value="xslt/Map_SDM_CretaeAUC_Resp.map"/>
+          <property name="SMOVersion" value="SMO61"/>
+          <inputTerminal type="SubmitSDMRequest-01:ADDResponse"/>
+          <outputTerminal type="SubmitResourceOrder:invokeResponseMsg">
+            <wire targetNode="SubmitResourceOrder_invoke_InputResponse"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Prep_SDM_CreateAUCTimeOut_Fail_Msg" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+
+BPMCustomLogger.logInfo("----- AppS_SubmitResourceOrder  TIBCO Module:::  Timeout/Fail while invoking SDM TIBCO AS Module-----");
+String sourceKey = "";
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+
+try {
+	sourceKey = smo.getString("/context/shared/TransID");
+	System.out.println("*************sourceKey**********"+sourceKey);
+	keys.put("TransactionID : ", sourceKey);
+}catch(Exception ee){
+	BPMCustomLogger.logError("Prepare TimeOut Msg: Unable to extract value for SourceKey");
+
+} 
+
+out.fire(ExceptionHelper.processUndefinedError(smo, out, TPConstants.AppS_TIMEOUT_FAIL_TIBCO, sourceKey)); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1515737022033"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;com.ibm.bpm.custom.utils.TPConstants;com.ibm.bpm.custom.utils.ExceptionHelper;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitResourceOrder:invokeFault1Msg">
+            <wire targetNode="SubmitResourceOrder_invoke_InputFault" targetTerminal="invokeFault1Msg"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Invoke_SA_Log_CreateEIR" type="ServiceInvoke">
+          <property name="referenceName" value="IOrderPayloadMediator_EIRPartner"/>
+          <property name="operationName" value="create"/>
+          <property name="invocationStyle" value="6"/>
+          <property name="retryOn" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryOn2"/>
+          <property name="retryCount" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryCount2"/>
+          <property name="retryDelay" promotedPropertyGroup="AppS_SubmitResourceOrder_TIBCO.ResourceOrder_SDM_TIBCO_MED" promotedPropertyName="ServiceInvoke1.retryDelay2"/>
+          <inputTerminal type="IOrderPayloadMediator_EIR:createRequestMsg"/>
+          <outputTerminal type="IOrderPayloadMediator_EIR:createResponseMsg">
+            <wire targetNode="Log_CreateEIR_Resp"/>
+          </outputTerminal>
+          <outputTerminal name="timeout" type="IOrderPayloadMediator_EIR:createRequestMsg">
+            <wire targetNode="Prep_SA_CreateEIR_TimeOut_Fail_Msg"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_SA_CreateEIR_TimeOut_Fail_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Log_CreateEIR_Req" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- AppS_SubmitResourceOrder  TIBCO Module::: Log  ServiceActivation - CreateEIR  Request  --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+ ]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1518423515711"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="IOrderPayloadMediator_EIR:createRequestMsg">
+            <wire targetNode="Invoke_SA_Log_CreateEIR"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_CreateEIR_Req" type="BOMapper">
+          <property name="root" value="/"/>
+          <property name="mappingFile" value="Map_CreateEIR_Req.map"/>
+          <inputTerminal type="SubmitResourceOrder:invokeMsg"/>
+          <outputTerminal type="IOrderPayloadMediator_EIR:createRequestMsg">
+            <wire targetNode="Log_CreateEIR_Req"/>
+          </outputTerminal>
+          <failTerminal>
+            <wire targetNode="Prep_MapFailure_Msg"/>
+          </failTerminal>
+        </node>
+        <node name="Log_CreateEIR_Resp" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- AppS_SubmitResourceOrder  TIBCO Module::: Log  ServiceActivation - CreateEIR  Response  --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal
+ 
+ 
+]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1518433521571"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="IOrderPayloadMediator_EIR:createResponseMsg">
+            <wire targetNode="Map_SDM_CreateEIR_Req"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Log_SDM_CreateEIR_Req" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+BPMCustomLogger.logInfo("----------- AppS_SubmitResourceOrder  TIBCO Module::: Log SDM - CreateEIR Request   --------------");
+LinkedHashMap<String, String> keys = new LinkedHashMap<String, String>() ;
+try{
+keys.put("TransactionID ::", smo.getString("/context/shared/TransID"));
+}
+catch(Exception e){
+BPMCustomLogger.logError("Error when getting key values from SMO in Log Entry, " + e.getMessage());
+}
+BPMCustomLogger.onEntry(smo, keys);
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1518433599322"/>
+          <property name="version" value="6.1.0"/>
+          <property name="javaImports" value="com.ibm.bpm.custom.logging.BPMCustomLogger;java.util.LinkedHashMap"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitSDMRequest-01:ADDRequest">
+            <wire targetNode="Invoke_SDM_CreateAUC_EIR"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node name="Map_SDM_CreateEIR_Req" type="XSLTransformation">
+          <property name="root" value="/"/>
+          <property name="XSLTransform" value="xslt/Map_SDM_CreateEIR_Req.xsl"/>
+          <property name="XMXMap" value="xslt/Map_SDM_CreateEIR_Req.map"/>
+          <property name="SMOVersion" value="SMO61"/>
+          <inputTerminal type="IOrderPayloadMediator_EIR:createResponseMsg"/>
+          <outputTerminal type="SubmitSDMRequest-01:ADDRequest">
+            <wire targetNode="Log_SDM_CreateEIR_Req"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+        <node displayName="Prep_SA_CreateEIR_TimeOut/Fail_Msg" name="Prep_SA_CreateEIR_TimeOut_Fail_Msg" type="CustomMediation">
+          <property name="javaCode"><![CDATA[
+out.fire(smo); // propagate the service message object to the primitive that is wired to the 'out' terminal]]></property>
+          <property name="javaClass" value="sca.component.mediation.java.Custom1518434758062"/>
+          <property name="version" value="6.1.0"/>
+          <inputTerminal/>
+          <outputTerminal explicitType="false" type="SubmitResourceOrder:invokeFault1Msg">
+            <wire targetNode="SubmitResourceOrder_invoke_InputFault" targetTerminal="invokeFault1Msg"/>
+          </outputTerminal>
+          <failTerminal/>
+        </node>
+      </requestFlow>
+      <errorFlow>
+        <node displayName="invoke : SubmitResourceOrder" name="SubmitResourceOrder_invoke_ErrorInput" type="ErrorInput">
+          <outputTerminal name="catchAll" type="XMLSchema:anyType"/>
+        </node>
+        <node displayName="invoke : SubmitResourceOrder" name="SubmitResourceOrder_invoke_InputResponse" type="InputResponse">
+          <inputTerminal type="SubmitResourceOrder:invokeResponseMsg"/>
+        </node>
+        <node displayName="invoke : SubmitResourceOrder" name="SubmitResourceOrder_invoke_InputFault" type="InputFault">
+          <inputTerminal name="invokeFault1Msg" type="SubmitResourceOrder:invokeFault1Msg"/>
+        </node>
+      </errorFlow>
+    </operation>
+  </interface>
+</mediationFlow>

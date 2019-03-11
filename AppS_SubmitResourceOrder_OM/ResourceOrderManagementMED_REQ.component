@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scdl:component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mfc="http://www.ibm.com/xmlns/prod/websphere/scdl/mfc/6.0.0" xmlns:ns1="http://Sterling_Library/GetResourceOrderMsg" xmlns:ns2="http://TPRMOAI/AIS/SubmitResourceOrder" xmlns:scdl="http://www.ibm.com/xmlns/prod/websphere/scdl/6.0.0" xmlns:wsdl="http://www.ibm.com/xmlns/prod/websphere/scdl/wsdl/6.0.0" displayName="ResourceOrderManagementMED_REQ" name="ResourceOrderManagementMED_REQ">
+  <interfaces>
+    <interface xsi:type="wsdl:WSDLPortType" portType="ns1:GetResourceOrderMsg"/>
+  </interfaces>
+  <references>
+    <reference name="SubmitResourceOrderPartner">
+      <interface xsi:type="wsdl:WSDLPortType" portType="ns2:SubmitResourceOrder"/>
+      <scdl:referenceQualifier xsi:type="scdl:SuspendTransaction" value="false"/>
+      <scdl:referenceQualifier xsi:type="scdl:Reliability"/>
+      <scdl:referenceQualifier xsi:type="scdl:DeliverAsyncAt" value="commit"/>
+      <wire target="SubmitResourceOrderImport_SCA"/>
+    </reference>
+  </references>
+  <implementation xsi:type="mfc:MediationFlowImplementation" mfcFile="ServiceOrderManagementMED_REQ.mfc">
+    <description>Contains the mediation flow logic and implementation</description>
+  </implementation>
+</scdl:component>

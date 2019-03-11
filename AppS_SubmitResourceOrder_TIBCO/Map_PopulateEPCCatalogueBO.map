@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map:businessObjectMap xmlns:Map_PopulateEPCCatalogueBO="http://AppS_SubmitResourceOrder_TIBCO" xmlns:ServiceMessageObject="smo://smo/name%3Dwsdl-primary/sharedContext%3D%257Bhttp%253A%252F%252FAS_SubmitResourceOrder_TIBCO%257DTibco_SharedBO/message%3D%257Bhttp%253A%252F%252FTPRMOAI%252FAIS%252FSubmitResourceOrder%257DinvokeMsg/xpath%3D%252F/namespace%3DBOMap/smo.xsd" xmlns:map="http://www.ibm.com/xmlns/prod/websphere/wbiserver/map/6.0.0" targetNamespace="http://AppS_SubmitResourceOrder_TIBCO">
+  <map:name>Map_PopulateEPCCatalogueBO</map:name>
+  <map:import>java.util.List</map:import>
+  <map:import>commonj.sdo.DataObject</map:import>
+  <map:import>java.util.Iterator</map:import>
+  <map:import>com.ibm.telcopack.helper.SDOUtil</map:import>
+  <map:import>com.ibm.telecopack.service.activation.helper.ServiceActivationHelper</map:import>
+  <map:inputBusinessObjectVariable businessObjectRef="ServiceMessageObject:ServiceMessageObject" name="ServiceMessageObject"/>
+  <map:outputBusinessObjectVariable businessObjectRef="ServiceMessageObject:ServiceMessageObject" name="ServiceMessageObject_1"/>
+  <map:propertyMap executionOrder="1">
+    <map:move>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/OperationName"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/OperationName"/>
+    </map:move>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="2">
+    <map:move>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/TransID"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/TransID"/>
+    </map:move>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="3">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/EPCCatalougeBO/SIM"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_1_context_shared_EPCCatalougeBO_SIM is commonj.sdo.DataObject&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+List resourceOrderList = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List charSpecList = null;&#xD;
+DataObject SIMDO =  SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;SIM&quot;);&#xD;
+DataObject CurrentSIMDO = SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;CURRENT_SIM&quot;);&#xD;
+DataObject NewSIMDO = SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;NEW_SIM&quot;);&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+	DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;PHYSICAL_RESOURCE&quot;)){
+			   DataObject physicalResourceDO = resource.getDataObject(&quot;PhysicalResource&quot;);
+			   if(physicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String physicalResourceId  = physicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(physicalResourceId.equals(&quot;SIM&quot;)){
+						charSpecList = 	physicalResourceDO.getList(&quot;CharacteristicSpecification&quot;);
+						//SIMDO = ServiceActivationHelper.getEPCObject(charSpecList,SIMDO);
+						if (charSpecList != null) {
+							for (Iterator itCharSpec=charSpecList.iterator(); itCharSpec.hasNext(); ) {
+								DataObject charSpecBO = (DataObject)itCharSpec.next();
+								String name = charSpecBO.getString(&quot;name&quot;);
+								if (name.equals(&quot;CH_INTERNAL_IS_FROM_CONFIG&quot;)) {
+									String value = charSpecBO.getString(&quot;Value/CharacteristicValue/value&quot;);
+									
+									if(value.equals(&quot;true&quot;)){
+										CurrentSIMDO = ServiceActivationHelper.getEPCObject(charSpecList,CurrentSIMDO);
+										SIMDO.setDataObject(&quot;CURRENT_SIM&quot;,CurrentSIMDO);
+									}else if (value.equals(&quot;false&quot;)){
+										NewSIMDO = ServiceActivationHelper.getEPCObject(charSpecList,NewSIMDO);
+										SIMDO.setDataObject(&quot;NEW_SIM&quot;,NewSIMDO);
+									}							
+									break;
+								}else{
+									NewSIMDO = ServiceActivationHelper.getEPCObject(charSpecList,NewSIMDO);
+									SIMDO.setDataObject(&quot;NEW_SIM&quot;,NewSIMDO);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}&#xD;
+}&#xD;
+ServiceMessageObject_1_context_shared_EPCCatalougeBO_SIM = SIMDO;</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="4">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/EPCCatalougeBO/MSISDN"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_1_context_shared_EPCCatalougeBO_MSISDN is commonj.sdo.DataObject&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+List resourceOrderList = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List charSpecList = null;&#xD;
+DataObject MSISDNDO =  SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;MSISDN&quot;);&#xD;
+DataObject CurrentMSISDNDO = SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;CURRENT_MSISDN&quot;);&#xD;
+DataObject NewMSISDNDO = SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;NEW_MSISDN&quot;);&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+	DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;LOGICAL_RESOURCE&quot;)){
+			   DataObject logicalResourceDO = resource.getDataObject(&quot;LogicalResource&quot;);
+			   if(logicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String logicalResourceId  = logicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(logicalResourceId.equals(&quot;MSISDN&quot;)){
+						charSpecList = 	logicalResourceDO.getList(&quot;CharacteristicSpecification&quot;);
+						MSISDNDO = ServiceActivationHelper.getEPCObject(charSpecList,MSISDNDO);
+						if (charSpecList != null) {
+							for (Iterator itCharSpec=charSpecList.iterator(); itCharSpec.hasNext(); ) {
+								DataObject charSpecBO = (DataObject)itCharSpec.next();
+								String name = charSpecBO.getString(&quot;name&quot;);
+								if (name.equals(&quot;CH_INTERNAL_IS_FROM_CONFIG&quot;)) {
+									String value = charSpecBO.getString(&quot;Value/CharacteristicValue/value&quot;);
+									
+									if(value.equals(&quot;true&quot;)){
+										CurrentMSISDNDO = ServiceActivationHelper.getEPCObject(charSpecList,CurrentMSISDNDO);
+										MSISDNDO.setDataObject(&quot;CURRENT_MSISDN&quot;,CurrentMSISDNDO);
+									}else if (value.equals(&quot;false&quot;)){
+										NewMSISDNDO = ServiceActivationHelper.getEPCObject(charSpecList,NewMSISDNDO);
+										MSISDNDO.setDataObject(&quot;NEW_MSISDN&quot;,NewMSISDNDO);
+									}							
+									break;
+								}else{
+									NewMSISDNDO = ServiceActivationHelper.getEPCObject(charSpecList,NewMSISDNDO);
+									MSISDNDO.setDataObject(&quot;NEW_MSISDN&quot;,NewMSISDNDO);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}&#xD;
+}&#xD;
+ServiceMessageObject_1_context_shared_EPCCatalougeBO_MSISDN = MSISDNDO;&#xD;
+&#xD;
+</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="5">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/EPCCatalougeBO/SUBSCRIBER"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_1_context_shared_EPCCatalougeBO_SUBSCRIBER is commonj.sdo.DataObject&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+List resourceOrderList = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List charSpecList = null;&#xD;
+DataObject SUBSCRIBERDO =  SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;SUBSCRIBER&quot;);&#xD;
+&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+	DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;LOGICAL_RESOURCE&quot;)){
+			   DataObject logicalResourceDO = resource.getDataObject(&quot;LogicalResource&quot;);
+			   if(logicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String logicalResourceId  = logicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(logicalResourceId.equals(&quot;SUBSCRIBER&quot;)){
+						charSpecList = 	logicalResourceDO.getList(&quot;CharacteristicSpecification&quot;);
+						SUBSCRIBERDO = ServiceActivationHelper.getEPCObject(charSpecList,SUBSCRIBERDO);
+					}
+				}
+			}
+		}
+	}&#xD;
+}&#xD;
+ServiceMessageObject_1_context_shared_EPCCatalougeBO_SUBSCRIBER = SUBSCRIBERDO;</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="6">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/EPCCatalougeBO/HANDSET"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_1_context_shared_EPCCatalougeBO_HANDSET is commonj.sdo.DataObject&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+List resourceOrderList = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List charSpecList = null;&#xD;
+DataObject HANDSETDO =  SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;HANDSET&quot;);&#xD;
+&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+	DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;PHYSICAL_RESOURCE&quot;)){
+			   DataObject physicalResourceDO = resource.getDataObject(&quot;PhysicalResource&quot;);
+			   if(physicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String physicalResourceId  = physicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(physicalResourceId.equals(&quot;HANDSET&quot;)){
+						charSpecList = 	physicalResourceDO.getList(&quot;CharacteristicSpecification&quot;);
+						HANDSETDO = ServiceActivationHelper.getEPCObject(charSpecList,HANDSETDO);
+					}
+				}
+			}
+		}
+	}&#xD;
+}&#xD;
+ServiceMessageObject_1_context_shared_EPCCatalougeBO_HANDSET = HANDSETDO;</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="7">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/EPCCatalougeBO/VM_SUBSCRIBER"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_1_context_shared_EPCCatalougeBO_VM_SUBSCRIBER is commonj.sdo.DataObject&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+&#xD;
+List resourceOrderList = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List charSpecList = null;&#xD;
+DataObject VMSUBSCRIBERDO =  SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;VM_SUBSCRIBER&quot;);&#xD;
+&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+	DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;LOGICAL_RESOURCE&quot;)){
+			   DataObject logicalResourceDO = resource.getDataObject(&quot;LogicalResource&quot;);
+			   if(logicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String logicalResourceId  = logicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(logicalResourceId.equals(&quot;VM_SUBSCRIBER&quot;)){
+						charSpecList = 	logicalResourceDO.getList(&quot;CharacteristicSpecification&quot;);
+						VMSUBSCRIBERDO = ServiceActivationHelper.getEPCObject(charSpecList,VMSUBSCRIBERDO);
+					}
+				}
+			}
+		}
+	}&#xD;
+}&#xD;
+ServiceMessageObject_1_context_shared_EPCCatalougeBO_VM_SUBSCRIBER = VMSUBSCRIBERDO;</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="8">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared/EPCCatalougeBO/VM_HOST"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_1_context_shared_EPCCatalougeBO_VM_HOST is commonj.sdo.DataObject&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+&#xD;
+List resourceOrderList = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List charSpecList = null;&#xD;
+DataObject VMHOSTDO =  SDOUtil.createBO(&quot;http://TIBCO_OSS_Library&quot;,&quot;VM_HOST&quot;);&#xD;
+&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+	DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;LOGICAL_RESOURCE&quot;)){
+			   DataObject logicalResourceDO = resource.getDataObject(&quot;LogicalResource&quot;);
+			   if(logicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String logicalResourceId  = logicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(logicalResourceId.equals(&quot;VM_HOST&quot;)){
+						charSpecList = 	logicalResourceDO.getList(&quot;CharacteristicSpecification&quot;);
+						VMHOSTDO = ServiceActivationHelper.getEPCObject(charSpecList,VMHOSTDO);
+					}
+				}
+			}
+		}
+	}&#xD;
+}&#xD;
+ServiceMessageObject_1_context_shared_EPCCatalougeBO_VM_HOST = VMHOSTDO;</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="9">
+    <map:move>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="body/invoke/submitResourceOrderInput"/>
+    </map:move>
+  </map:propertyMap>
+</map:businessObjectMap>

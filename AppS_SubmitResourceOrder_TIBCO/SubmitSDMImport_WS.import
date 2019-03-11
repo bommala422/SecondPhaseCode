@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scdl:import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://www.ibm.com/xmlns/prod/websphere/scdl/jaxws/6.0.0" xmlns:ns1="http://three.co.uk/wsdl/as_sdm_093/serviceordersdm/v1" xmlns:scdl="http://www.ibm.com/xmlns/prod/websphere/scdl/6.0.0" xmlns:wsdl="http://www.ibm.com/xmlns/prod/websphere/scdl/wsdl/6.0.0" displayName="SubmitSDMImport_WS" name="SubmitSDMImport_WS">
+  <interfaces>
+    <interface xsi:type="wsdl:WSDLPortType" preferredInteractionStyle="sync" portType="ns1:SubmitSDMRequest-01"/>
+  </interfaces>
+  <esbBinding xsi:type="jaxws:JaxWsImportBinding" endpoint="https://10.90.101.4:15019/serviceOrderSDM/v1/SubmitSDMRequest/" port="ns1:SubmitSDMRequest-01SOAP" service="ns1:SubmitSDMRequest-01" WSICompliant="true"/>
+</scdl:import>

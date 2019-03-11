@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="AppS_SubmitResourceOrder_TIBCOApp">
+        <wb-resource deploy-path="/" source-path="/EarContent"/>
+        <dependent-module archiveName="AppS_SubmitResourceOrder_TIBCO.jar" deploy-path="/" handle="module:/resource/AppS_SubmitResourceOrder_TIBCO/AppS_SubmitResourceOrder_TIBCO">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="AppS_SubmitResourceOrder_TIBCOWeb.war" deploy-path="/" handle="module:/resource/AppS_SubmitResourceOrder_TIBCOWeb/AppS_SubmitResourceOrder_TIBCOWeb">
+            <dependent-object>WebModule_1169158408425</dependent-object>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

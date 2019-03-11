@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://AS_SubmitResourceOrder_TIBCO" xmlns:bons0="http://TIBCO_OSS_Library" xmlns:bons2="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/common">
+
+	<xsd:import namespace="http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/common" schemaLocation="Header.xsd">
+	</xsd:import>
+
+	<xsd:import namespace="http://TIBCO_OSS_Library" schemaLocation="EPCCatalougeBO.xsd">
+	</xsd:import>
+	<xsd:complexType name="Tibco_SharedBO">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" name="TargetSystem" type="xsd:string">
+			</xsd:element>
+			<xsd:element minOccurs="0" name="OperationName" type="xsd:string">
+			</xsd:element>
+			<xsd:element minOccurs="0" name="TransID" type="xsd:string">
+			</xsd:element>
+			<xsd:element minOccurs="0" name="EPCCatalougeBO" type="bons0:EPCCatalougeBO">
+			</xsd:element>
+
+
+
+			<xsd:element minOccurs="0" name="CDMHeader" type="bons2:Header">
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

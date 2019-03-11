@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map:businessObjectMap xmlns:Map_ModifSub_Req="http://AppS_SubmitResourceOrder_TIBCO" xmlns:ServiceMessageObject="smo://smo/name%3Dwsdl-primary/sharedContext%3D%257Bhttp%253A%252F%252FAS_SubmitResourceOrder_TIBCO%257DTibco_SharedBO/message%3D%257Bhttp%253A%252F%252Fh3g.ibm.serviceactivation.threeDS%257DmodifySubscriptionRequestMsg/xpath%3D%252F/namespace%3DBOMap/smo.xsd" xmlns:ServiceMessageObject_1="smo://smo/name%3Dwsdl-primary/sharedContext%3D%257Bhttp%253A%252F%252FAS_SubmitResourceOrder_TIBCO%257DTibco_SharedBO/message%3D%257Bhttp%253A%252F%252FTPRMOAI%252FAIS%252FSubmitResourceOrder%257DinvokeMsg/xpath%3D%252F/namespace%3DBOMap/smo.xsd" xmlns:map="http://www.ibm.com/xmlns/prod/websphere/wbiserver/map/6.0.0" targetNamespace="http://AppS_SubmitResourceOrder_TIBCO">
+  <map:name>Map_ModifSub_Req</map:name>
+  <map:import>java.util.List</map:import>
+  <map:import>commonj.sdo.DataObject</map:import>
+  <map:import>java.util.Iterator</map:import>
+  <map:import>com.ibm.telcopack.helper.SDOUtil</map:import>
+  <map:import>com.ibm.telecopack.service.activation.helper.ServiceActivationHelper</map:import>
+  <map:import>java.util.ArrayList</map:import>
+  <map:inputBusinessObjectVariable businessObjectRef="ServiceMessageObject_1:ServiceMessageObject" name="ServiceMessageObject"/>
+  <map:outputBusinessObjectVariable businessObjectRef="ServiceMessageObject:ServiceMessageObject" name="ServiceMessageObject_1"/>
+  <map:propertyMap executionOrder="1">
+    <map:move>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="context/shared"/>
+    </map:move>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="2">
+    <map:move>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ID/ID"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="body/modifySubscription/resourceOrder/Payload[1]/ID/ID"/>
+    </map:move>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="3">
+    <map:set value="TYPE_RESOURCE_ORDER">
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="body/modifySubscription/resourceOrder/Payload[1]/ID/type"/>
+    </map:set>
+  </map:propertyMap>
+  <map:propertyMap executionOrder="4">
+    <map:custom>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="body/invoke/submitResourceOrderInput/Payload[1]/ResourceOrderItem"/>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/EPCCatalougeBO/SIM"/>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/EPCCatalougeBO/MSISDN"/>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/EPCCatalougeBO/SUBSCRIBER"/>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/EPCCatalougeBO/HANDSET"/>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/EPCCatalougeBO/VM_SUBSCRIBER"/>
+      <map:input businessObjectVariableRef="ServiceMessageObject" property="context/shared/EPCCatalougeBO/VM_HOST"/>
+      <map:output businessObjectVariableRef="ServiceMessageObject_1" property="body/modifySubscription/resourceOrder/Payload[1]/ResourceOrderItem"/>
+      <map:javaCode>// The specific type of variable ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem is java.util.List&#xD;
+// The specific type of variable ServiceMessageObject_context_shared_EPCCatalougeBO_SIM is commonj.sdo.DataObject&#xD;
+// The specific type of variable ServiceMessageObject_context_shared_EPCCatalougeBO_MSISDN is commonj.sdo.DataObject&#xD;
+// The specific type of variable ServiceMessageObject_context_shared_EPCCatalougeBO_SUBSCRIBER is commonj.sdo.DataObject&#xD;
+// The specific type of variable ServiceMessageObject_context_shared_EPCCatalougeBO_HANDSET is commonj.sdo.DataObject&#xD;
+// The specific type of variable ServiceMessageObject_context_shared_EPCCatalougeBO_VM_SUBSCRIBER is commonj.sdo.DataObject&#xD;
+// The specific type of variable ServiceMessageObject_context_shared_EPCCatalougeBO_VM_HOST is commonj.sdo.DataObject&#xD;
+// The specific type of variable ServiceMessageObject_1_body_modifySubscription_resourceOrder_Payload1_ResourceOrderItem is java.util.List&#xD;
+// Input ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem&#xD;
+// Variable ServiceMessageObject_1_body_modifySubscription_resourceOrder_Payload[1]_ResourceOrderItem is represented as ServiceMessageObject_1_body_modifySubscription_resourceOrder_Payload1_ResourceOrderItem&#xD;
+&#xD;
+&#xD;
+List resourceOrderList  = (List)ServiceMessageObject_body_invoke_submitResourceOrderInput_Payload1_ResourceOrderItem;&#xD;
+List resourceOrderBOList  =  new ArrayList();&#xD;
+DataObject SIMDO = (DataObject)ServiceMessageObject_context_shared_EPCCatalougeBO_SIM;&#xD;
+DataObject NewSIMDO = SIMDO.getDataObject(&quot;NEW_SIM&quot;);&#xD;
+DataObject MSISDNDO = (DataObject)ServiceMessageObject_context_shared_EPCCatalougeBO_MSISDN;&#xD;
+DataObject NewMSISDNDO = MSISDNDO.getDataObject(&quot;NEW_MSISDN&quot;);&#xD;
+DataObject SUBSCRIBERDO =  (DataObject)ServiceMessageObject_context_shared_EPCCatalougeBO_SUBSCRIBER;&#xD;
+DataObject HANDSETDO =  (DataObject)ServiceMessageObject_context_shared_EPCCatalougeBO_HANDSET;&#xD;
+DataObject VM_SUBSCRIBERDO =  (DataObject)ServiceMessageObject_context_shared_EPCCatalougeBO_VM_SUBSCRIBER;&#xD;
+DataObject VM_HOSTDO =  (DataObject)ServiceMessageObject_context_shared_EPCCatalougeBO_VM_HOST;&#xD;
+for (Iterator itResourceOrderBO=resourceOrderList.iterator(); itResourceOrderBO.hasNext(); ) {
+	DataObject resourceOrderBO = (DataObject)itResourceOrderBO.next();
+	DataObject resourceOrderOutputBO = SDOUtil.createBO(&quot;http://www.ibm.com/telecom/v8.5.0/businessobject/system/sid-v12.5/systemview&quot;,&quot;ResourceOrderItem&quot;);
+	DataObject BIItemBO = resourceOrderBO.getDataObject(&quot;BusinessInteractionItem&quot;);
+	if(BIItemBO.isSet(&quot;Resource&quot;)){
+		DataObject resource  = BIItemBO.getDataObject(&quot;Resource&quot;);
+		//ID.setString(&quot;ID&quot;, BIItemBO.getString(&quot;ID/ID&quot;));
+		//Resources
+		if(resource.isSet(&quot;ID&quot;)){
+			String type  = resource.getString(&quot;ID/type&quot;);
+			if(type.equals(&quot;PHYSICAL_RESOURCE&quot;)){
+			   DataObject physicalResourceDO = resource.getDataObject(&quot;PhysicalResource&quot;);
+			   if(physicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String physicalResourceId  = physicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(physicalResourceId.equals(&quot;SIM&quot;)){
+						SDOUtil.executeMap(&quot;http://AppS_SubmitResourceOrder_TIBCO&quot;,&quot;Map_ResourceOrderitem_To_ResourceOrderItem&quot;,resourceOrderBO,resourceOrderOutputBO);
+						List charSpecList = ServiceActivationHelper.setCharacterSpecficationList(NewSIMDO);
+						if (charSpecList != null) {							
+							DataObject ResourceOutputBO = resourceOrderOutputBO.getDataObject(&quot;BusinessInteractionItem&quot;).getDataObject(&quot;Resource&quot;);
+							ResourceOutputBO.setList(&quot;CharacteristicSpecification&quot;,charSpecList);
+						}
+						resourceOrderBOList.add(resourceOrderOutputBO);&#xD;
+   					}else if(physicalResourceId.equals(&quot;HANDSET&quot;)){
+						SDOUtil.executeMap(&quot;http://AppS_SubmitResourceOrder_TIBCO&quot;,&quot;Map_ResourceOrderitem_To_ResourceOrderItem&quot;,resourceOrderBO,resourceOrderOutputBO);
+						List charSpecList = ServiceActivationHelper.setCharacterSpecficationList(HANDSETDO);
+						if (charSpecList != null) {							
+							DataObject ResourceOutputBO = resourceOrderOutputBO.getDataObject(&quot;BusinessInteractionItem&quot;).getDataObject(&quot;Resource&quot;);
+							ResourceOutputBO.setList(&quot;CharacteristicSpecification&quot;,charSpecList);
+						}
+						resourceOrderBOList.add(resourceOrderOutputBO);&#xD;
+   					}
+				}
+			}else if(type.equals(&quot;LOGICAL_RESOURCE&quot;)){
+			   DataObject logicalResourceDO = resource.getDataObject(&quot;LogicalResource&quot;);
+			   if(logicalResourceDO.isSet(&quot;ID&quot;)){
+				   	String logicalResourceId  = logicalResourceDO.getString(&quot;ID/ID&quot;);
+					if(logicalResourceId.equals(&quot;MSISDN&quot;)){
+				   		SDOUtil.executeMap(&quot;http://AppS_SubmitResourceOrder_TIBCO&quot;,&quot;Map_ResourceOrderitem_To_ResourceOrderItem&quot;,resourceOrderBO,resourceOrderOutputBO);
+						List charSpecList = ServiceActivationHelper.setCharacterSpecficationList(NewMSISDNDO);
+						if (charSpecList != null) {							
+							DataObject ResourceOutputBO = resourceOrderOutputBO.getDataObject(&quot;BusinessInteractionItem&quot;).getDataObject(&quot;Resource&quot;);
+							ResourceOutputBO.setList(&quot;CharacteristicSpecification&quot;,charSpecList);
+						}
+						resourceOrderBOList.add(resourceOrderOutputBO);&#xD;
+   					}else if(logicalResourceId.equals(&quot;SUBSCRIBER&quot;)){
+						SDOUtil.executeMap(&quot;http://AppS_SubmitResourceOrder_TIBCO&quot;,&quot;Map_ResourceOrderitem_To_ResourceOrderItem&quot;,resourceOrderBO,resourceOrderOutputBO);
+						List charSpecList = ServiceActivationHelper.setCharacterSpecficationList(SUBSCRIBERDO);
+						if (charSpecList != null) {							
+							DataObject ResourceOutputBO = resourceOrderOutputBO.getDataObject(&quot;BusinessInteractionItem&quot;).getDataObject(&quot;Resource&quot;);
+							ResourceOutputBO.setList(&quot;CharacteristicSpecification&quot;,charSpecList);
+						}
+						resourceOrderBOList.add(resourceOrderOutputBO);
+					}else if(logicalResourceId.equals(&quot;VM_SUBSCRIBER&quot;)){
+						SDOUtil.executeMap(&quot;http://AppS_SubmitResourceOrder_TIBCO&quot;,&quot;Map_ResourceOrderitem_To_ResourceOrderItem&quot;,resourceOrderBO,resourceOrderOutputBO);
+						List charSpecList = ServiceActivationHelper.setCharacterSpecficationList(VM_SUBSCRIBERDO);
+						if (charSpecList != null) {							
+							DataObject ResourceOutputBO = resourceOrderOutputBO.getDataObject(&quot;BusinessInteractionItem&quot;).getDataObject(&quot;Resource&quot;);
+							ResourceOutputBO.setList(&quot;CharacteristicSpecification&quot;,charSpecList);
+						}
+						resourceOrderBOList.add(resourceOrderOutputBO);
+					}else if(logicalResourceId.equals(&quot;VM_HOST&quot;)){
+						SDOUtil.executeMap(&quot;http://AppS_SubmitResourceOrder_TIBCO&quot;,&quot;Map_ResourceOrderitem_To_ResourceOrderItem&quot;,resourceOrderBO,resourceOrderOutputBO);
+						List charSpecList = ServiceActivationHelper.setCharacterSpecficationList(VM_HOSTDO);
+						if (charSpecList != null) {							
+							DataObject ResourceOutputBO = resourceOrderOutputBO.getDataObject(&quot;BusinessInteractionItem&quot;).getDataObject(&quot;Resource&quot;);
+							ResourceOutputBO.setList(&quot;CharacteristicSpecification&quot;,charSpecList);
+						}
+						resourceOrderBOList.add(resourceOrderOutputBO);
+					}
+				}
+			}
+		}
+	}&#xD;
+&#xD;
+}&#xD;
+ServiceMessageObject_1_body_modifySubscription_resourceOrder_Payload1_ResourceOrderItem = resourceOrderBOList;&#xD;
+</map:javaCode>
+    </map:custom>
+  </map:propertyMap>
+</map:businessObjectMap>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sibxscaresources:SCAModule xmlns:sibxscaresources="http://www.ibm.com/websphere/appserver/schemas/6.0/sibxscaresources.xmi" identifier="AppS_SubmitResourceOrder_OM">
+  <sCAModuleProperty identifier="ServiceInvoke1.retryOn1" value="1" type="STRING" group="AppS_SubmitResourceOrder_OM.ResourceOrderManagementMED_REQ"/>
+  <sCAModuleProperty identifier="ServiceInvoke1.retryCount1" value="3" type="INTEGER" group="AppS_SubmitResourceOrder_OM.ResourceOrderManagementMED_REQ"/>
+  <sCAModuleProperty identifier="ServiceInvoke1.retryDelay1" value="5" type="INTEGER" group="AppS_SubmitResourceOrder_OM.ResourceOrderManagementMED_REQ"/>
+</sibxscaresources:SCAModule>
